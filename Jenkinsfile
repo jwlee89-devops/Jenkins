@@ -120,7 +120,6 @@ pipeline {
 
             dir ('./server'){
                 sh """
-                $(aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com)
                 docker build -t ${SERVICE_NAME.toLowerCase()} .
                 docker tag ${SERVICE_NAME.toLowerCase()}:latest ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
                 docker push ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
