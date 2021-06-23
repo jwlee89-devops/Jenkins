@@ -70,8 +70,7 @@ pipeline {
                 app.push("${env.BUILD_NUMBER}")
                 app.push("latest")
             }
-          }
-
+          
           post {
             failure {
               error 'This pipeline stops here...'
