@@ -69,7 +69,8 @@ pipeline {
               docker.withRegistry('https://347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1','er:ap-northeast-2:AWS_Credentials_Jenkins'){
                 app.push("${env.BUILD_NUMBER}")
                 app.push("latest")
-            }
+			  }
+			}
           
           post {
             failure {
