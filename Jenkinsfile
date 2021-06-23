@@ -46,8 +46,8 @@ pipeline {
                   echo "${login}"
                   sh "${login}"
                   sh """
-                  docker build -t 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1-${env.BUILD_NUMBER} .
-                  docker push 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1-${env.BUILD_NUMBER}
+                  docker build -t 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1:${env.BUILD_NUMBER} .
+                  docker push 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1:${env.BUILD_NUMBER}
                   """
                 }
               }
