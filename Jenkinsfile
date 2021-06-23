@@ -42,59 +42,6 @@ pipeline {
                 }
             }
         }
-        
-        // aws s3 에 파일을 올림
-        stage('Deploy Frontend') {
-          steps {
-            echo 'Deploying Frontend'
-            // 프론트엔드 디렉토리의 정적파일들을 S3 에 올림, 이 전에 반드시 EC2 instance profile 을 등록해야함.
-            dir ('./website'){
-                sh '''
-                aws s3 sync ./ s3://jwlee-jenkins-test
-                '''
-            }
-          }
-
-          post {
-              // If Maven was able to run the tests, even if some of the test
-              // failed, record the test results and archive the jar file.
-              success {
-                  echo 'Successfully Cloned Repository'
-
-                  mail  to: 'shon89.devops@gmail.com',
-                        subject: "Deploy Frontend Success",
-                        body: "Successfully deployed frontend!"
-
-              }
-
-              failure {
-                  echo 'I failed :('
-
-                  mail  to: 'shon89.devops@gmail.com',
-                        subject: "Failed Pipelinee",
-                        body: "Something is wrong with deploy frontend"
-              }
-          }
-        }
-        
-        stage('Lint Backend') {
-            // Docker plugin and Docker Pipeline 두개를 깔아야 사용가능!
-            agent {
-              docker {
-                image 'node:latest'
-              }
-            }
-            
-            steps {
-              dir ('./server'){
-                  sh '''
-                  npm install&&
-                  npm run lint
-                  '''
-              }
-            }
-        }
-        
         stage('Test Backend') {
           agent {
             docker {
@@ -117,44 +64,17 @@ pipeline {
           agent any
           steps {
             echo 'Build Backend'
-
+            app = docker.build("347473060929.dkr.ecr.ap-northeast-2.amazonaws.com")
             dir ('./server'){
-                sh """
-                \$(aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com)
-                docker build -t ${SERVICE_NAME.toLowerCase()} .
-                docker tag ${SERVICE_NAME.toLowerCase()}:latest ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
-                docker push ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
-                """
+              docker.withRegistry('https://347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1','er:ap-northeast-2:AWS_Credentials_Jenkins){
+                app.push("${env.BUILD_NUMBER}")
+                app.push("latest")
             }
           }
 
           post {
             failure {
               error 'This pipeline stops here...'
-            }
-          }
-        }
-        
-        stage('Deploy Backend') {
-          agent any
-
-          steps {
-            echo 'Build Backend'
-
-            dir ('./server'){
-                sh '''
-                docker tag ${SERVICE_NAME.toLowerCase()}:latest ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
-                docker push ${ECR_TASK_URL}:ver${env.BUILD_NUMBER}
-                '''
-            }
-          }
-
-          post {
-            success {
-              mail  to: 'shon89.devops@gmail.com',
-                    subject: "Deploy Success",
-                    body: "Successfully deployed!"
-                  
             }
           }
         }
