@@ -16,12 +16,5 @@ pipeline {
                     credentialsId: '0ca0afaf-8db8-4dda-bc10-56d8276dfd51'
             }
         }
-        stage("Build"){
-            echo "Docker File Build Start"
-        }
-        stage("ECR PUSH"){
-            echo "ECR PUSH"
-        }
     }
-
 }
