@@ -37,7 +37,7 @@ pipeline {
         stage('Bulid Backend') {
           agent any
           steps {
-            echo 'Build Backend'
+            echo 'Build Backend 1'
             dir('./server'){
               script {
                 withAWS(region:'ap-northeast-2',credentials:'AWS_Credentials_Jenkins'){
