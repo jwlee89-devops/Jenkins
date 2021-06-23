@@ -40,7 +40,7 @@ pipeline {
             echo 'Build Backend 1'
             dir('./server'){
               script {
-                withAWS(region:'ap-northeast-2',credentials:credentials('AWS_Credentials_Jenkins')){
+                withAWS(region:'ap-northeast-2',credentials:'AWS_Credentials_Jenkins'){
                   def login = ecrLogin()
 
                   echo "${login}"
