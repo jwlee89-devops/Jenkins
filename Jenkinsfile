@@ -38,6 +38,20 @@ pipeline {
           agent any
           steps {
             echo 'Build Backend'
+            dir('./server'){
+              script {
+                withAWS(region:'ap-northeast-2',credentials:'AWS_Credentials_Jenkins'){
+                  def login = ecrLogin()
+
+                  echo "${login}"
+                  sh "${login}"
+                  sh """
+                  docker build -t 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1-${env.BUILD_NUMBER} .
+                  docker push 347473060929.dkr.ecr.ap-northeast-2.amazonaws.com/jw-repo-1-${env.BUILD_NUMBER}
+                  """
+                }
+              }
+            }
 		  }
         }
     }
